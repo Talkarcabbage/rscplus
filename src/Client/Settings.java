@@ -30,6 +30,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.Properties;
 import Client.KeybindSet.KeyModifier;
+import Client.NotificationsHandler;
 import Game.Camera;
 import Game.Client;
 import Game.Game;
@@ -40,24 +41,23 @@ import Game.Renderer;
  * Manages storing, loading, and changing settings.
  */
 public class Settings {
-	
+
 	// Internally used variables
 	public static boolean fovUpdateRequired;
 	public static boolean versionCheckRequired = true;
-	
+	public static final double VERSION_NUMBER = 20171115.164007;
 	/**
-	 * A time stamp corresponding to the current version of this source code. Used as a crude versioning system.
-	 * <p>
+	 * A time stamp corresponding to the current version of this source code. Used as a sophisticated versioning system.
+	 *
 	 * This variable follows ISO 8601 yyyyMMdd.HHmmss format. The version number will actually be read from this source
 	 * file, so please don't change the name of this variable and
-	 * keep the assignment near the top for scanning.<br>
-	 * <br>
+	 * keep the assignment near the top for scanning.
+	 *
 	 * This variable can be set automatically by ant by issuing `ant setversion` before you push your changes, so
 	 * there's no need to update it manually.
-	 * </p>
+	 *
 	 */
-	public static final double VERSION_NUMBER = 20170402.075627; // TODO: Separate the "version" into its own file
-	
+
 	/*
 	 * Settings Variables
 	 * 
@@ -913,7 +913,7 @@ public class Settings {
 		LOW_HP_NOTIF_VALUE = 25;
 		FATIGUE_NOTIFICATIONS = true;
 		FATIGUE_NOTIF_VALUE = 98;
-		NOTIFICATION_SOUNDS = false;
+		NOTIFICATION_SOUNDS = !isRecommendedToUseSystemNotifs();
 		USE_SYSTEM_NOTIFICATIONS = isRecommendedToUseSystemNotifs();
 		TRAY_NOTIFS = true;
 		TRAY_NOTIFS_ALWAYS = false;
@@ -956,7 +956,11 @@ public class Settings {
 	 */
 	public static boolean isRecommendedToUseSystemNotifs() {
 		// Users on Windows 8.1 or 10 are recommend to set USE_SYSTEM_NOTIFICATIONS = true
-		return "Windows 10".equals(System.getProperty("os.name")) || "Windows 8.1".equals(System.getProperty("os.name"));
+		if (System.getProperty("os.name").contains("Windows")) {
+			return "Windows 10".equals(System.getProperty("os.name")) || "Windows 8.1".equals(System.getProperty("os.name"));
+		} else { //Linux, macOS, etc.
+			return NotificationsHandler.hasNotifySend;
+		}
 	}
 	
 }
